@@ -887,82 +887,83 @@ function calculateThumbImpairment(value, dataArray, type) {
 
 // Main calculation function
 function calculateAllImpairments() {
-    // Calculate finger impairments
-    const fingerTypes = ['index', 'middle', 'ring', 'little'];
     let totalHDImpairment = 0;
 
-fingerTypes.forEach(fingerType => {
-    const form = document.getElementById(`${fingerType}Finger`);
-    const dipFlexion = form.querySelector('.DIPFlexion').value;
-    const dipExtension = form.querySelector('.DIPExtension').value;
-    const dipAnkylosis = form.querySelector('.DIPAnkylosis').value;
-    const pipFlexion = form.querySelector('.PIPFlexion').value;
-    const pipExtension = form.querySelector('.PIPExtension').value;
-    const pipAnkylosis = form.querySelector('.PIPAnkylosis').value;
-    const mpFlexion = form.querySelector('.MPFlexion').value;
-    const mpExtension = form.querySelector('.MPExtension').value;
-    const mpAnkylosis = form.querySelector('.MPAnkylosis').value;
+    // Calculate finger impairments
+    const fingerTypes = ['index', 'middle', 'ring', 'little'];
 
-    const dipImpairments = [
-        dipFlexion && lookupfingerDTImpairment(parseFloat(dipFlexion), 'DIP', 'flexion'),
-        dipExtension && lookupfingerDTImpairment(parseFloat(dipExtension), 'DIP', 'extension'),
-        dipAnkylosis && lookupfingerDTImpairment(parseFloat(dipAnkylosis), 'DIP', 'ankylosis')
-    ].filter(imp => imp);
+    fingerTypes.forEach(fingerType => {
+        const form = document.getElementById(`${fingerType}Finger`);
+        
+        // DIP Joint
+        const dipFlexion = form.querySelector('.DIPFlexion').value;
+        const dipExtension = form.querySelector('.DIPExtension').value;
+        const dipAnkylosis = form.querySelector('.DIPAnkylosis').value;
 
-    const pipImpairments = [
-        pipFlexion && lookupfingerDTImpairment(parseFloat(pipFlexion), 'PIP', 'flexion'),
-        pipExtension && lookupfingerDTImpairment(parseFloat(pipExtension), 'PIP', 'extension'),
-        pipAnkylosis && lookupfingerDTImpairment(parseFloat(pipAnkylosis), 'PIP', 'ankylosis')
-    ].filter(imp => imp);
+        const dipFlexionImp = dipFlexion ? lookupfingerDTImpairment(parseFloat(dipFlexion), 'DIP', 'flexion') : 0;
+        const dipExtensionImp = dipExtension ? lookupfingerDTImpairment(parseFloat(dipExtension), 'DIP', 'extension') : 0;
+        const dipAnkylosisImp = dipAnkylosis ? lookupfingerDTImpairment(parseFloat(dipAnkylosis), 'DIP', 'ankylosis') : 0;
 
-    const mpImpairments = [
-        mpFlexion && lookupfingerDTImpairment(parseFloat(mpFlexion), 'MP', 'flexion'),
-        mpExtension && lookupfingerDTImpairment(parseFloat(mpExtension), 'MP', 'extension'),
-        mpAnkylosis && lookupfingerDTImpairment(parseFloat(mpAnkylosis), 'MP', 'ankylosis')
-    ].filter(imp => imp);
+        form.querySelector('.DIPFlexionImpairment').textContent = dipFlexionImp;
+        form.querySelector('.DIPExtensionImpairment').textContent = dipExtensionImp;
+        form.querySelector('.DIPAnkylosisImpairment').textContent = dipAnkylosisImp;
 
-    const dipImpairment = addImpairments(dipImpairments);
-    const pipImpairment = addImpairments(pipImpairments);
-    const mpImpairment = addImpairments(mpImpairments);
+        const dipTotalImp = Math.max(dipFlexionImp + dipExtensionImp, dipAnkylosisImp);
+        form.querySelector('.DIPTotalImpairment').textContent = dipTotalImp;
 
-    // Create an array of impairment values
-    const jointImpairments = [dipImpairment, pipImpairment, mpImpairment].filter(imp => imp > 0);
+        // PIP Joint
+        const pipFlexion = form.querySelector('.PIPFlexion').value;
+        const pipExtension = form.querySelector('.PIPExtension').value;
+        const pipAnkylosis = form.querySelector('.PIPAnkylosis').value;
 
-    // Sort the joint impairments from highest to lowest
-    jointImpairments.sort((a, b) => b - a);
+        const pipFlexionImp = pipFlexion ? lookupfingerDTImpairment(parseFloat(pipFlexion), 'PIP', 'flexion') : 0;
+        const pipExtensionImp = pipExtension ? lookupfingerDTImpairment(parseFloat(pipExtension), 'PIP', 'extension') : 0;
+        const pipAnkylosisImp = pipAnkylosis ? lookupfingerDTImpairment(parseFloat(pipAnkylosis), 'PIP', 'ankylosis') : 0;
 
-    const { combined: totalImpairment, combinedSteps } = combinefingerImpairments(jointImpairments);
+        form.querySelector('.PIPFlexionImpairment').textContent = pipFlexionImp;
+        form.querySelector('.PIPExtensionImpairment').textContent = pipExtensionImp;
+        form.querySelector('.PIPAnkylosisImpairment').textContent = pipAnkylosisImp;
 
-    form.querySelector('.DIPFlexionImpairment').textContent = dipImpairments[0] !== undefined ? dipImpairments[0] : 0;
-    form.querySelector('.DIPExtensionImpairment').textContent = dipImpairments[1] !== undefined ? dipImpairments[1] : 0;
-    form.querySelector('.DIPAnkylosisImpairment').textContent = dipImpairments[2] !== undefined ? dipImpairments[2] : 0;
-    form.querySelector('.DIPTotalImpairment').textContent = dipImpairment;
+        const pipTotalImp = Math.max(pipFlexionImp + pipExtensionImp, pipAnkylosisImp);
+        form.querySelector('.PIPTotalImpairment').textContent = pipTotalImp;
 
-    form.querySelector('.PIPFlexionImpairment').textContent = pipImpairments[0] !== undefined ? pipImpairments[0] : 0;
-    form.querySelector('.PIPExtensionImpairment').textContent = pipImpairments[1] !== undefined ? pipImpairments[1] : 0;
-    form.querySelector('.PIPAnkylosisImpairment').textContent = pipImpairments[2] !== undefined ? pipImpairments[2] : 0;
-    form.querySelector('.PIPTotalImpairment').textContent = pipImpairment;
+        // MP Joint
+        const mpFlexion = form.querySelector('.MPFlexion').value;
+        const mpExtension = form.querySelector('.MPExtension').value;
+        const mpAnkylosis = form.querySelector('.MPAnkylosis').value;
 
-    form.querySelector('.MPFlexionImpairment').textContent = mpImpairments[0] !== undefined ? mpImpairments[0] : 0;
-    form.querySelector('.MPExtensionImpairment').textContent = mpImpairments[1] !== undefined ? mpImpairments[1] : 0;
-    form.querySelector('.MPAnkylosisImpairment').textContent = mpImpairments[2] !== undefined ? mpImpairments[2] : 0;
-    form.querySelector('.MPTotalImpairment').textContent = mpImpairment;
+        const mpFlexionImp = mpFlexion ? lookupfingerDTImpairment(parseFloat(mpFlexion), 'MP', 'flexion') : 0;
+        const mpExtensionImp = mpExtension ? lookupfingerDTImpairment(parseFloat(mpExtension), 'MP', 'extension') : 0;
+        const mpAnkylosisImp = mpAnkylosis ? lookupfingerDTImpairment(parseFloat(mpAnkylosis), 'MP', 'ankylosis') : 0;
 
-    const hdImpairment = convertToHD(totalImpairment, fingerType);
-    totalHDImpairment += hdImpairment;
+        form.querySelector('.MPFlexionImpairment').textContent = mpFlexionImp;
+        form.querySelector('.MPExtensionImpairment').textContent = mpExtensionImp;
+        form.querySelector('.MPAnkylosisImpairment').textContent = mpAnkylosisImp;
 
-    let CVC;
-    if (totalImpairment === 0) {
-        CVC = `CVC: 0 DT = 0 HD`;
-    } else if (jointImpairments.length === 1) {
-        CVC = `CVC: ${totalImpairment} DT = ${hdImpairment} HD`;
-    } else {
-        const combinedStepsText = combinedSteps.join(' C ');
-        CVC = `CVC: ${combinedStepsText} = ${totalImpairment} DT = ${hdImpairment} HD`;
-    }
+        const mpTotalImp = Math.max(mpFlexionImp + mpExtensionImp, mpAnkylosisImp);
+        form.querySelector('.MPTotalImpairment').textContent = mpTotalImp;
 
-    form.querySelector('.cvc-result').textContent = CVC;
-});
+        // Calculate total finger impairment
+        const jointImpairments = [dipTotalImp, pipTotalImp, mpTotalImp].filter(imp => imp > 0);
+        jointImpairments.sort((a, b) => b - a);
+
+        const { combined: totalImpairment, combinedSteps } = combinefingerImpairments(jointImpairments);
+
+        const hdImpairment = convertToHD(totalImpairment, fingerType);
+        totalHDImpairment += hdImpairment;
+
+        let CVC;
+        if (totalImpairment === 0) {
+            CVC = `CVC: 0 DT = 0 HD`;
+        } else if (jointImpairments.length === 1) {
+            CVC = `CVC: ${totalImpairment} DT = ${hdImpairment} HD`;
+        } else {
+            const combinedStepsText = combinedSteps.join(' C ');
+            CVC = `CVC: ${combinedStepsText} = ${totalImpairment} DT = ${hdImpairment} HD`;
+        }
+
+        form.querySelector('.cvc-result').textContent = CVC;
+    });
 
     // Calculate thumb impairment
     const ipFlexion = document.getElementById('ip-flexion').value;
